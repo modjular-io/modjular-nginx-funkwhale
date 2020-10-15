@@ -115,5 +115,9 @@ server {
         # django static files
         alias ${STATIC_ROOT}/;
     }
-
+}
 EOF
+
+cat /etc/nginx/conf.d/default.conf
+echo "-----------------------------------"
+
