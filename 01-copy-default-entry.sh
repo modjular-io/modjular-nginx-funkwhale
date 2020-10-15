@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Copying default.conf to conf.d directory for host $PFUNKWHALE_HOSTNAME}."
+echo "Copying default.conf to conf.d directory for host ${FUNKWHALE_HOSTNAME}."
 cat > "/etc/nginx/conf.d/default.conf" << EOF
 upstream funkwhale-api {
     # depending on your setup, you may want to update this
@@ -10,7 +10,7 @@ upstream funkwhale-api {
 
 
 # required for websocket support
-map $http_upgrade $connection_upgrade {
+map \$http_upgrade \$connection_upgrade {
     default upgrade;
     ''      close;
 }
@@ -27,7 +27,7 @@ server {
     # have a look here for let's encrypt configuration:
     # https://certbot.eff.org/all-instructions/#debian-9-stretch-nginx
 
-    root /srv/funkwhale/front/dist;
+    root ${FUNKWHALE_FRONTEND_PATH};
 
     # If you are using S3 to host your files, remember to add your S3 URL to the
     # media-src and img-src headers (e.g. img-src 'self' https://<your-S3-URL> data:)
@@ -37,7 +37,7 @@ server {
 
 
     location / {
-        include /etc/nginx/funkwhale_proxy.conf;
+        include /etc/nginx/vhost.d/funkwhale-proxy.conf;
         # this is needed if you have file import via upload enabled
         client_max_body_size 1024M;
         proxy_pass   http://funkwhale-api/;
@@ -48,7 +48,7 @@ server {
         add_header Referrer-Policy "strict-origin-when-cross-origin";
 
         add_header X-Frame-Options "ALLOW";
-        alias /srv/funkwhale/front/dist/;
+        alias ${FUNKWHALE_FRONTEND_PATH};
         expires 30d;
         add_header Pragma public;
         add_header Cache-Control "public, must-revalidate, proxy-revalidate";
@@ -59,25 +59,25 @@ server {
         add_header Referrer-Policy "strict-origin-when-cross-origin";
 
         add_header X-Frame-Options "ALLOW";
-        alias /srv/funkwhale/front/dist/embed.html;
+        alias ${FUNKWHALE_FRONTEND_PATH}/embed.html;
         expires 30d;
         add_header Pragma public;
         add_header Cache-Control "public, must-revalidate, proxy-revalidate";
     }
 
     location /federation/ {
-        include /etc/nginx/funkwhale_proxy.conf;
+        include /etc/nginx/vhost.d/funkwhale-proxy.conf;
         proxy_pass   http://funkwhale-api/federation/;
     }
 
     # You can comment this if you do not plan to use the Subsonic API
     location /rest/ {
-        include /etc/nginx/funkwhale_proxy.conf;
+        include /etc/nginx/vhost.d/funkwhale-proxy.conf;
         proxy_pass   http://funkwhale-api/api/subsonic/rest/;
     }
 
     location /.well-known/ {
-        include /etc/nginx/funkwhale_proxy.conf;
+        include /etc/nginx/vhost.d/funkwhale-proxy.conf;
         proxy_pass   http://funkwhale-api/.well-known/;
     }
 
@@ -99,7 +99,7 @@ server {
         internal;
         # Needed to ensure DSub auth isn't forwarded to S3/Minio, see #932
         proxy_set_header Authorization "";
-        proxy_pass $1;
+        proxy_pass \$1;
     }
 
     location /_protected/music {
