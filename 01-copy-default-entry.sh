@@ -27,7 +27,7 @@ server {
     # have a look here for let's encrypt configuration:
     # https://certbot.eff.org/all-instructions/#debian-9-stretch-nginx
 
-    root ${FUNKWHALE_FRONTEND_PATH};
+    root ${FUNKWHALE_FRONTEND_PATH}/;
 
     # If you are using S3 to host your files, remember to add your S3 URL to the
     # media-src and img-src headers (e.g. img-src 'self' https://<your-S3-URL> data:)
@@ -48,7 +48,7 @@ server {
         add_header Referrer-Policy "strict-origin-when-cross-origin";
 
         add_header X-Frame-Options "ALLOW";
-        alias ${FUNKWHALE_FRONTEND_PATH};
+        alias ${FUNKWHALE_FRONTEND_PATH}/;
         expires 30d;
         add_header Pragma public;
         add_header Cache-Control "public, must-revalidate, proxy-revalidate";
