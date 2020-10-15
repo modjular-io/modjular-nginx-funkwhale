@@ -1,0 +1,5 @@
+version: '2'
+services:
+  modjular-nginx-funkwhale:
+    image: modjular/modjular-nginx-funkwhale:latest
+    build: .
