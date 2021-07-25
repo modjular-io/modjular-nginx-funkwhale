@@ -95,7 +95,7 @@ server {
     # Comment the previous location and uncomment this one if you're storing
     # media files in a S3 bucket
     location ~ /_protected/media/(.+) {
-        #resolver 10.0.0.2;
+        resolver 10.0.0.2;
         internal;
         # Needed to ensure DSub auth isn't forwarded to S3/Minio, see #932
         proxy_set_header Authorization "";
